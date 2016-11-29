@@ -53,6 +53,11 @@ abstract public class Message {
     private IP ipAddress_;
     private int browserId_;
     private int countryId_;
+    private boolean countryKnown_;
+    private boolean richRdf_;
+    private TreeSet<Long> mentioned_;
+    private Boolean public_;
+    private String link_;
 
     public Message() {
         tags_ = new TreeSet<Integer>();
@@ -79,6 +84,11 @@ abstract public class Message {
         ipAddress_ = new IP(ipAddress);
         browserId_ = browserId;
         countryId_ = Dictionaries.ips.getLocation(ipAddress);
+	countryKnown_ = true;
+	richRdf_ = false;
+	mentioned_ = null;
+	public_ = null;
+	link_ = null;
     }
 
     public void initialize(long messageId,
@@ -100,6 +110,11 @@ abstract public class Message {
         ipAddress_.copy(ipAddress);
         browserId_ = browserId;
         countryId_ = Dictionaries.ips.getLocation(ipAddress);
+	countryKnown_ = true;
+	richRdf_ = false;
+	mentioned_ = null;
+	public_ = null;
+	link_ = null;
     }
 
     public long messageId() {
@@ -174,4 +189,49 @@ abstract public class Message {
     public void countryId ( int l ) {
 	    countryId_ = l;
     }
+
+    public boolean countryKnown () {
+	return countryKnown_;
+    }
+    
+    public void countryKnown ( boolean l ) {
+	countryKnown_ = l;
+    }
+
+    public boolean richRdf () {
+	return richRdf_;
+    }
+    
+    public void richRdf ( boolean l ) {
+	richRdf_ = l;
+    }
+
+    public TreeSet<Long> mentioned() {
+	    return mentioned_;
+    }
+
+    public void mentioned( TreeSet<Long> mentioned )  {
+	    if (mentioned_ != null)
+		mentioned_.clear();
+	    else
+		mentioned_ = new TreeSet<Long>();
+	    mentioned_.addAll(mentioned);
+    }
+
+    public Boolean isPublic () {
+	return public_;
+    }
+    
+    public void setPublic ( Boolean l ) {
+	public_ = l;
+    }
+
+    public String link()  {
+	    return link_;
+    }
+
+    public void link( String s)  {
+	    link_ = new String(s);
+    }
+
 }

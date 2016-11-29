@@ -116,12 +116,24 @@ public class TurtlePersonActivitySerializer extends PersonActivitySerializer {
 		Turtle.createTripleSPO(result, prefix, SNVOC.language,
 				Turtle.createLiteral(Dictionaries.languages.getLanguageName(post.language())));
 
-		Turtle.createTripleSPO(result, prefix, SNVOC.locatedIn,
-				DBP.fullPrefixed(Dictionaries.places.getPlaceName(post.countryId())));
+		if (!post.richRdf() || post.countryKnown()) {
+		    Turtle.createTripleSPO(result, prefix, SNVOC.locatedIn,
+					   DBP.fullPrefixed(Dictionaries.places.getPlaceName(post.countryId())));
+		}
 
 		Turtle.createTripleSPO(result, SN.getForumURI(post.forumId()), SNVOC.containerOf, prefix);
 		Turtle.createTripleSPO(result, prefix, SNVOC.hasCreator, SN.getPersonURI(post.author().accountId()));
 
+		if (post.richRdf()) {
+		    if (post.mentioned() != null)
+			for( Long x : post.mentioned())
+			    Turtle.createTripleSPO(result, prefix, SNVOC.hasMentioned, SN.getPersonURI(x));
+		    if (post.isPublic() != null)
+			Turtle.createTripleSPO(result, prefix, SNVOC.hasVisibility, Turtle.createDataTypeLiteral(post.isPublic().toString(), XSD.Boolean));
+		    if (post.link() != null)
+			Turtle.createTripleSPO(result, prefix, SNVOC.hasLink, Turtle.createLiteral(post.link()));
+		}
+		
 		for( Integer tag : post.tags()) {
 			String topic = Dictionaries.tags.getName(tag);
 			Turtle.createTripleSPO(result, prefix, SNVOC.hasTag, SNTAG.fullPrefixed(topic));
@@ -145,19 +157,37 @@ public class TurtlePersonActivitySerializer extends PersonActivitySerializer {
 				Turtle.createLiteral(comment.ipAddress().toString()));
 		Turtle.AddTriple(result, false, false, prefix, SNVOC.browser,
 				Turtle.createLiteral(Dictionaries.browsers.getName(comment.browserId())));
-		Turtle.AddTriple(result, false, false, prefix, SNVOC.content,
-				Turtle.createLiteral(comment.content()));
-		Turtle.AddTriple(result, false, true, prefix, SNVOC.length,
-				Turtle.createDataTypeLiteral(Integer.toString(comment.content().length()), XSD.Int));
+		if (comment.richRdf() && comment.content().equals("")) {
+		    Turtle.AddTriple(result, false, true, prefix, SNVOC.hasGif,
+				     Turtle.createLiteral(comment.gif()));
+		}
+		else {
+		    Turtle.AddTriple(result, false, false, prefix, SNVOC.content,
+				     Turtle.createLiteral(comment.content()));
+		    Turtle.AddTriple(result, false, true, prefix, SNVOC.length,
+				     Turtle.createDataTypeLiteral(Integer.toString(comment.content().length()), XSD.Int));
+		}
 
 		String replied = (comment.replyOf() == comment.postId()) ? SN.getPostURI(comment.postId()) :
 				SN.getCommentURI(comment.replyOf());
 		Turtle.createTripleSPO(result, prefix, SNVOC.replyOf, replied);
-		Turtle.createTripleSPO(result, prefix, SNVOC.locatedIn,
-				DBP.fullPrefixed(Dictionaries.places.getPlaceName(comment.countryId())));
+		if (!comment.richRdf() || comment.countryKnown()) {
+		    Turtle.createTripleSPO(result, prefix, SNVOC.locatedIn,
+					   DBP.fullPrefixed(Dictionaries.places.getPlaceName(comment.countryId())));
+		}
 
 		Turtle.createTripleSPO(result, prefix, SNVOC.hasCreator,
 				SN.getPersonURI(comment.author().accountId()));
+
+		if (comment.richRdf()) {
+		    if (comment.mentioned() != null)
+			for( Long x : comment.mentioned())
+			    Turtle.createTripleSPO(result, prefix, SNVOC.hasMentioned, SN.getPersonURI(x));
+		    if (comment.isPublic() != null)
+			Turtle.createTripleSPO(result, prefix, SNVOC.hasVisibility, Turtle.createDataTypeLiteral(comment.isPublic().toString(), XSD.Boolean));
+		    if (comment.link() != null)
+			Turtle.createTripleSPO(result, prefix, SNVOC.hasLink, Turtle.createLiteral(comment.link()));
+		}
 
 		for( Integer tag : comment.tags()) {
 			String topic = Dictionaries.tags.getName(tag);
@@ -185,8 +215,18 @@ public class TurtlePersonActivitySerializer extends PersonActivitySerializer {
 
 		Turtle.createTripleSPO(result, prefix, SNVOC.hasCreator, SN.getPersonURI(photo.author().accountId()));
 		Turtle.createTripleSPO(result, SN.getForumURI(photo.forumId()), SNVOC.containerOf, prefix);
-		Turtle.createTripleSPO(result, prefix, SNVOC.locatedIn,
-				DBP.fullPrefixed(Dictionaries.places.getPlaceName(photo.countryId())));
+		if (!photo.richRdf() || photo.countryKnown()) {
+		    Turtle.createTripleSPO(result, prefix, SNVOC.locatedIn,
+					   DBP.fullPrefixed(Dictionaries.places.getPlaceName(photo.countryId())));
+		}
+
+		if (photo.richRdf()) {
+		    if (photo.mentioned() != null)
+			for( Long x : photo.mentioned())
+			    Turtle.createTripleSPO(result, prefix, SNVOC.hasMentioned, SN.getPersonURI(x));
+		    if (photo.isPublic() != null)
+			Turtle.createTripleSPO(result, prefix, SNVOC.hasVisibility, Turtle.createDataTypeLiteral(photo.isPublic().toString(), XSD.Boolean));
+		}
 
 		for( Integer tag: photo.tags()) {
 			String topic = Dictionaries.tags.getName(tag);

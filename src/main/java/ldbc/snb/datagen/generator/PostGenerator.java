@@ -42,6 +42,7 @@ import ldbc.snb.datagen.objects.*;
 import ldbc.snb.datagen.serializer.PersonActivityExporter;
 import ldbc.snb.datagen.util.RandomGeneratorFarm;
 import ldbc.snb.datagen.vocabulary.SN;
+import org.apache.hadoop.conf.Configuration;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ abstract public class PostGenerator {
 	private CommentGenerator commentGenerator_;
 	private LikeGenerator likeGenerator_;
 	private Post post_;
+        private boolean richRdf = false;
 	
 	static protected class PostInfo {
 		public TreeSet<Integer> tags;
@@ -69,11 +71,12 @@ abstract public class PostGenerator {
 	
 	/* A set of random number generator for different purposes.*/
 	
-	public PostGenerator( TextGenerator generator, CommentGenerator commentGenerator, LikeGenerator likeGenerator){
+    public PostGenerator( TextGenerator generator, CommentGenerator commentGenerator, LikeGenerator likeGenerator, Configuration conf){
 		this.generator_ = generator;
 		this.commentGenerator_ = commentGenerator;
 		this.likeGenerator_ = likeGenerator;
 		this.post_ = new Post();
+		this.richRdf = conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false);
 	}
 	
 	/** @brief Initializes the post generator.*/
@@ -111,6 +114,25 @@ abstract public class PostGenerator {
 						Dictionaries.ips.getIP(randomFarm.get(RandomGeneratorFarm.Aspect.IP), randomFarm.get(RandomGeneratorFarm.Aspect.DIFF_IP), randomFarm.get(RandomGeneratorFarm.Aspect.DIFF_IP_FOR_TRAVELER), member.person().ipAddress(), postInfo.date),
 						Dictionaries.browsers.getPostBrowserId(randomFarm.get(RandomGeneratorFarm.Aspect.DIFF_BROWSER), randomFarm.get(RandomGeneratorFarm.Aspect.BROWSER), member.person().browserId()),
 						forum.language());
+					if (richRdf) {
+					    post_.richRdf(true);
+					    if (randomFarm.get(RandomGeneratorFarm.Aspect.POST_MENTIONED).nextDouble() > 0.6) {
+						//TODO: Add mentioned persons with some logic
+						TreeSet<Long> t = new TreeSet<Long>();
+						t.add(new Long(23));
+						post_.mentioned(t);
+					    }
+					    if (randomFarm.get(RandomGeneratorFarm.Aspect.POST_VISIBILITY).nextDouble() > 0.95) {
+						//TODO: Sometimes it should be true, sometimes (when somebody was mentioned) it should be false
+						post_.setPublic(true);
+					    }
+					    if (randomFarm.get(RandomGeneratorFarm.Aspect.POST_LINK).nextDouble() > 0.57) {
+						//TODO: Proper link should be added
+						post_.link("link1");
+					    }
+					}
+					if (richRdf && randomFarm.get(RandomGeneratorFarm.Aspect.POST_COUNTRY).nextDouble() > 0.02)
+					    post_.countryKnown(false);
 					exporter.export(post_);
 
 					if( randomFarm.get(RandomGeneratorFarm.Aspect.NUM_LIKE).nextDouble() <= 0.1 ) {

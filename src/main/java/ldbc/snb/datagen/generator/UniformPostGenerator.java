@@ -8,6 +8,7 @@ package ldbc.snb.datagen.generator;
 import ldbc.snb.datagen.dictionary.Dictionaries;
 import ldbc.snb.datagen.objects.Forum;
 import ldbc.snb.datagen.objects.ForumMembership;
+import org.apache.hadoop.conf.Configuration;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -20,8 +21,8 @@ import java.util.TreeSet;
 public class UniformPostGenerator extends PostGenerator {
 
 
-	public UniformPostGenerator(TextGenerator generator, CommentGenerator commentGenerator, LikeGenerator likeGenerator) {
-		super(generator, commentGenerator, likeGenerator);
+    public UniformPostGenerator(TextGenerator generator, CommentGenerator commentGenerator, LikeGenerator likeGenerator, Configuration conf) {
+	    super(generator, commentGenerator, likeGenerator, conf);
 	}
 
 	@Override

@@ -227,6 +227,7 @@ public class DatagenParams {
     public static int    endYear                           = 2013;
     public static int    numYears                          = 3;
     public static boolean updateStreams                    = false;
+    public static boolean richRdf                          = false;
     public static boolean exportText                       = true;
     public static boolean compressed                       = false;
     public static int	numPartitions			   = 1;
@@ -314,6 +315,7 @@ public class DatagenParams {
             compressed = conf.getBoolean("ldbc.snb.datagen.serializer.compressed",false);
             numThreads = conf.getInt("ldbc.snb.datagen.generator.numThreads",1);
             updateStreams = conf.getBoolean("ldbc.snb.datagen.serializer.updateStreams",false);
+	    richRdf = conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false);
             numPartitions = conf.getInt("ldbc.snb.datagen.serializer.numPartitions",1);
             numUpdatePartitions = conf.getInt("ldbc.snb.datagen.serializer.numUpdatePartitions",1);
             deltaTime = conf.getInt("ldbc.snb.datagen.generator.deltaTime",10000);
@@ -323,6 +325,8 @@ public class DatagenParams {
             System.out.println(" ... Num Persons " + numPersons);
             System.out.println(" ... Start Year " + startYear);
             System.out.println(" ... Num Years " + numYears);
+	    if (richRdf)
+		System.out.println(" ... Rich Rdf " + richRdf);
         } catch (Exception e) {
             System.err.println(e.getMessage());
             System.exit(-1);

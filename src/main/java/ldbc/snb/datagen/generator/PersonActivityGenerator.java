@@ -9,6 +9,7 @@ import ldbc.snb.datagen.serializer.UpdateEventSerializer;
 import ldbc.snb.datagen.util.FactorTable;
 import ldbc.snb.datagen.util.RandomGeneratorFarm;
 import ldbc.snb.datagen.vocabulary.SN;
+import org.apache.hadoop.conf.Configuration;
 
 import org.apache.hadoop.mapreduce.Reducer.Context;
 
@@ -33,17 +34,17 @@ public class PersonActivityGenerator {
     private FactorTable factorTable_;
     private PersonActivityExporter exporter_;
 
-	public PersonActivityGenerator( PersonActivitySerializer serializer, UpdateEventSerializer updateSerializer ) {
+    public PersonActivityGenerator( PersonActivitySerializer serializer, UpdateEventSerializer updateSerializer, Configuration conf) {
 		randomFarm_ = new RandomGeneratorFarm();
 		personActivitySerializer_ = serializer;
 		updateSerializer_ = updateSerializer;
 		forumGenerator_ = new ForumGenerator();
 		TextGenerator generator = new LdbcSnbTextGenerator(randomFarm_.get(RandomGeneratorFarm.Aspect.LARGE_TEXT), Dictionaries.tags);
         likeGenerator_ = new LikeGenerator();
-        commentGenerator_ = new CommentGenerator(generator, likeGenerator_);
-		uniformPostGenerator_ = new UniformPostGenerator(generator, commentGenerator_, likeGenerator_);
-		flashmobPostGenerator_ = new FlashmobPostGenerator(generator, commentGenerator_, likeGenerator_);
-		photoGenerator_ = new PhotoGenerator(likeGenerator_);
+        commentGenerator_ = new CommentGenerator(generator, likeGenerator_, conf);
+	uniformPostGenerator_ = new UniformPostGenerator(generator, commentGenerator_, likeGenerator_, conf);
+	flashmobPostGenerator_ = new FlashmobPostGenerator(generator, commentGenerator_, likeGenerator_, conf);
+		photoGenerator_ = new PhotoGenerator(likeGenerator_, conf);
         factorTable_ = new FactorTable();
         exporter_ = new PersonActivityExporter(personActivitySerializer_, updateSerializer_, factorTable_);
 	}

@@ -10,6 +10,7 @@ import ldbc.snb.datagen.objects.*;
 import ldbc.snb.datagen.serializer.PersonActivityExporter;
 import ldbc.snb.datagen.util.RandomGeneratorFarm;
 import ldbc.snb.datagen.vocabulary.SN;
+import org.apache.hadoop.conf.Configuration;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,12 +24,14 @@ public class PhotoGenerator {
 	private long postId = 0;
 	private LikeGenerator likeGenerator_;
 	private Photo photo_;
+        private boolean richRdf = false;
 
 	private static final String SEPARATOR = "  ";
 	
-	public PhotoGenerator(LikeGenerator likeGenerator) {
+    public PhotoGenerator(LikeGenerator likeGenerator, Configuration conf) {
 		this.likeGenerator_ = likeGenerator;
 		this.photo_ = new Photo();
+		this.richRdf = conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false);
 	}
 	public long createPhotos(RandomGeneratorFarm randomFarm, final Forum album, final ArrayList<ForumMembership> memberships, long numPhotos, long startId, PersonActivityExporter exporter) throws IOException {
 		long nextId = startId;
@@ -81,6 +84,21 @@ public class PhotoGenerator {
 			/*if( date <= Dictionaries.dates.getEndDateTime() )*/ {
 				long id = SN.formId(SN.composeId(nextId++,date));
 				photo_.initialize(id,date,album.moderator(), album.id(), "photo"+id+".jpg",tags,album.moderator().ipAddress(),album.moderator().browserId(),latt,longt);
+				if (richRdf) {
+				    photo_.richRdf(true);
+				    if (randomFarm.get(RandomGeneratorFarm.Aspect.PHOTO_MENTIONED).nextDouble() > 0.6) {
+					//TODO: Add mentioned persons with some logic
+					TreeSet<Long> t = new TreeSet<Long>();
+					t.add(new Long(23));
+					photo_.mentioned(t);
+				    }
+				    if (randomFarm.get(RandomGeneratorFarm.Aspect.PHOTO_VISIBILITY).nextDouble() > 0.95) {
+					//TODO: Sometimes it should be true, sometimes (when somebody was mentioned) it should be false
+					photo_.setPublic(true);
+				    }
+				}
+				if (richRdf && randomFarm.get(RandomGeneratorFarm.Aspect.PHOTO_COUNTRY).nextDouble() > 0.06)
+				    photo_.countryKnown(false);
 				exporter.export(photo_);
 				if( randomFarm.get(RandomGeneratorFarm.Aspect.NUM_LIKE).nextDouble() <= 0.1 ) {
 					likeGenerator_.generateLikes(randomFarm.get(RandomGeneratorFarm.Aspect.NUM_LIKE), album, photo_, Like.LikeType.PHOTO, exporter);

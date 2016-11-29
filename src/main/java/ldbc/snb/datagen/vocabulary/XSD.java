@@ -55,6 +55,7 @@ public class XSD {
     public static final String Year = PREFIX + "gYear";
     public static final String Date = PREFIX + "date";
     public static final String DateTime = PREFIX + "dateTime";
+    public static final String Boolean = PREFIX + "boolean";
 
 
     /**

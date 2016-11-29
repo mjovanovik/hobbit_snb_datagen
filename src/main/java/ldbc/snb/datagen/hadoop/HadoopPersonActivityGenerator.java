@@ -56,7 +56,7 @@ public class HadoopPersonActivityGenerator {
                 if(DatagenParams.updateStreams) {
                     updateSerializer_ = new UpdateEventSerializer(conf, DatagenParams.hadoopDir + "/temp_updateStream_forum_" + reducerId, reducerId, DatagenParams.numUpdatePartitions);
                 }
-                personActivityGenerator_ = new PersonActivityGenerator(personActivitySerializer_, updateSerializer_);
+                personActivityGenerator_ = new PersonActivityGenerator(personActivitySerializer_, updateSerializer_, conf);
 
                 fs_ = FileSystem.get(context.getConfiguration());
                 personFactors_ = fs_.create(new Path(DatagenParams.hadoopDir+"/"+ "m" + reducerId + DatagenParams.PERSON_COUNTS_FILE));
