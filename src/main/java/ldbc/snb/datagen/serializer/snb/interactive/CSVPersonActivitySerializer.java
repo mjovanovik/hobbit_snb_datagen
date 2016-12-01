@@ -34,12 +34,14 @@ public class CSVPersonActivitySerializer extends PersonActivitySerializer {
 		POST_HASCREATOR_PERSON("post_hasCreator_person"),
 		POST_HASTAG_TAG("post_hasTag_tag"),
 		POST_ISLOCATEDIN_PLACE("post_isLocatedIn_place"),
+		POST_HASMENTIONED_PERSON("post_hasMentioned_person"),
 		COMMENT("comment"),
 		COMMENT_HASCREATOR_PERSON("comment_hasCreator_person"),
 		COMMENT_HASTAG_TAG("comment_hasTag_tag"),
 		COMMENT_ISLOCATEDIN_PLACE("comment_isLocatedIn_place"),
 		COMMENT_REPLYOF_POST("comment_replyOf_post"),
-		COMMENT_REPLYOF_COMMENT("comment_replyOf_comment");
+		COMMENT_REPLYOF_COMMENT("comment_replyOf_comment"),
+		COMMENT_HASMENTIONED_PERSON("comment_hasMentioned_person");
 		
 		private final String name;
 		
@@ -110,6 +112,10 @@ public class CSVPersonActivitySerializer extends PersonActivitySerializer {
         arguments.add("language");
         arguments.add("content");
         arguments.add("length");
+	if (conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false))
+	    arguments.add("public");
+	if (conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false))
+	    arguments.add("link");
         writers[FileNames.POST.ordinal()].writeEntry(arguments);
         arguments.clear();
 
@@ -128,6 +134,11 @@ public class CSVPersonActivitySerializer extends PersonActivitySerializer {
         writers[FileNames.POST_ISLOCATEDIN_PLACE.ordinal()].writeEntry(arguments);
         arguments.clear();
 
+	arguments.add("Post.id");
+        arguments.add("Person.id");
+        writers[FileNames.POST_HASMENTIONED_PERSON.ordinal()].writeEntry(arguments);
+        arguments.clear();
+
         arguments.add("id");
         arguments.add("creationDate");
         arguments.add("locationIP");
@@ -136,6 +147,10 @@ public class CSVPersonActivitySerializer extends PersonActivitySerializer {
 	if (conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false))
 	    arguments.add("gifFile");
         arguments.add("length");
+	if (conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false))
+	    arguments.add("public");
+	if (conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false))
+	    arguments.add("link");
         writers[FileNames.COMMENT.ordinal()].writeEntry(arguments);
         arguments.clear();
 
@@ -162,6 +177,11 @@ public class CSVPersonActivitySerializer extends PersonActivitySerializer {
         arguments.add("Comment.id");
         arguments.add("Comment.id");
         writers[FileNames.COMMENT_REPLYOF_COMMENT.ordinal()].writeEntry(arguments);
+        arguments.clear();
+	
+        arguments.add("Comment.id");
+        arguments.add("Person.id");
+        writers[FileNames.COMMENT_HASMENTIONED_PERSON.ordinal()].writeEntry(arguments);
         arguments.clear();
 
 	}
@@ -208,6 +228,16 @@ public class CSVPersonActivitySerializer extends PersonActivitySerializer {
 		arguments.add(Dictionaries.languages.getLanguageName(post.language()));
 		arguments.add(post.content());
 		arguments.add(Integer.toString(post.content().length()));
+		if (post.richRdf())
+		    if (post.isPublic() != null)
+			arguments.add(post.isPublic().toString());
+		    else
+			arguments.add("");
+		if (post.richRdf())
+		    if (post.link() != null)
+			arguments.add(post.link());
+		    else
+			arguments.add("");
 		writers[FileNames.POST.ordinal()].writeEntry(arguments);
 		arguments.clear();
 
@@ -235,6 +265,14 @@ public class CSVPersonActivitySerializer extends PersonActivitySerializer {
 			writers[FileNames.POST_HASTAG_TAG.ordinal()].writeEntry(arguments);
 			arguments.clear();
 		}
+
+		if (post.richRdf())
+		    for( Long t : post.mentioned() ) {
+			arguments.add(Long.toString(post.messageId()));
+			arguments.add(Long.toString(t));
+			writers[FileNames.POST_HASMENTIONED_PERSON.ordinal()].writeEntry(arguments);
+			arguments.clear();
+		    }
 	}
 	
 	protected void serialize( final Comment comment ) {
@@ -246,6 +284,16 @@ public class CSVPersonActivitySerializer extends PersonActivitySerializer {
 		if (comment.richRdf())
 		    arguments.add(comment.gif());
 		arguments.add(Integer.toString(comment.content().length()));
+		if (comment.richRdf())
+		    if (comment.isPublic() != null)
+			arguments.add(comment.isPublic().toString());
+		    else
+			arguments.add("");
+		if (comment.richRdf())
+		    if (comment.link() != null)
+			arguments.add(comment.link());
+		    else
+			arguments.add("");
 		writers[FileNames.COMMENT.ordinal()].writeEntry(arguments);
 		arguments.clear();
 		
@@ -278,6 +326,14 @@ public class CSVPersonActivitySerializer extends PersonActivitySerializer {
 			writers[FileNames.COMMENT_HASTAG_TAG.ordinal()].writeEntry(arguments);
 			arguments.clear();
 		}
+
+		if (comment.richRdf())
+		    for( Long t : comment.mentioned() ) {
+			arguments.add(Long.toString(comment.messageId()));
+			arguments.add(Long.toString(t));
+			writers[FileNames.COMMENT_HASMENTIONED_PERSON.ordinal()].writeEntry(arguments);
+			arguments.clear();
+		    }
 	}
 	
 	protected void serialize(final  Photo photo ) {
@@ -290,6 +346,11 @@ public class CSVPersonActivitySerializer extends PersonActivitySerializer {
 		arguments.add(empty);
 		arguments.add(empty);
 		arguments.add(Integer.toString(0));
+		if (photo.richRdf())
+		    if (photo.isPublic() != null)
+			arguments.add(photo.isPublic().toString());
+		    else
+			arguments.add("");
 		writers[FileNames.POST.ordinal()].writeEntry(arguments);
 		arguments.clear();
 		
@@ -317,6 +378,14 @@ public class CSVPersonActivitySerializer extends PersonActivitySerializer {
 			writers[FileNames.POST_HASTAG_TAG.ordinal()].writeEntry(arguments);
 			arguments.clear();
 		}
+
+		if (photo.richRdf())
+		    for( Long t : photo.mentioned() ) {
+			arguments.add(Long.toString(photo.messageId()));
+			arguments.add(Long.toString(t));
+			writers[FileNames.POST_HASMENTIONED_PERSON.ordinal()].writeEntry(arguments);
+			arguments.clear();
+		    }
 	}
 	
 	protected void serialize(final  ForumMembership membership ) {

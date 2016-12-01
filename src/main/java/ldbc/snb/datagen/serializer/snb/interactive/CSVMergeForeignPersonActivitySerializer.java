@@ -24,8 +24,10 @@ public class CSVMergeForeignPersonActivitySerializer extends PersonActivitySeria
         PERSON_LIKES_COMMENT ("person_likes_comment"),
         POST("post"),
         POST_HASTAG_TAG("post_hasTag_tag"),
+	POST_HASMENTIONED_PERSON("post_hasMentioned_person"),
         COMMENT("comment"),
-        COMMENT_HASTAG_TAG("comment_hasTag_tag");
+        COMMENT_HASTAG_TAG("comment_hasTag_tag"),
+	COMMENT_HASMENTIONED_PERSON("comment_hasMentioned_person");
 
         private final String name;
 
@@ -90,12 +92,21 @@ public class CSVMergeForeignPersonActivitySerializer extends PersonActivitySeria
         arguments.add("creator");
         arguments.add("Forum.id");
         arguments.add("place");
+	if (conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false))
+	    arguments.add("public");
+	if (conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false))
+	    arguments.add("link");
         writers[FileNames.POST.ordinal()].writeEntry(arguments);
         arguments.clear();
 
         arguments.add("Post.id");
         arguments.add("Tag.id");
         writers[FileNames.POST_HASTAG_TAG.ordinal()].writeEntry(arguments);
+        arguments.clear();
+
+	arguments.add("Post.id");
+        arguments.add("Person.id");
+        writers[FileNames.POST_HASMENTIONED_PERSON.ordinal()].writeEntry(arguments);
         arguments.clear();
 
         arguments.add("id");
@@ -110,12 +121,21 @@ public class CSVMergeForeignPersonActivitySerializer extends PersonActivitySeria
         arguments.add("place");
         arguments.add("replyOfPost");
         arguments.add("replyOfComment");
+	if (conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false))
+	    arguments.add("public");
+	if (conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false))
+	    arguments.add("link");
         writers[FileNames.COMMENT.ordinal()].writeEntry(arguments);
         arguments.clear();
 
         arguments.add("Comment.id");
         arguments.add("Tag.id");
         writers[FileNames.COMMENT_HASTAG_TAG.ordinal()].writeEntry(arguments);
+        arguments.clear();
+
+	arguments.add("Comment.id");
+        arguments.add("Person.id");
+        writers[FileNames.COMMENT_HASMENTIONED_PERSON.ordinal()].writeEntry(arguments);
         arguments.clear();
     }
 
@@ -163,6 +183,16 @@ public class CSVMergeForeignPersonActivitySerializer extends PersonActivitySeria
 	    arguments.add(Integer.toString(post.countryId()));
 	else
 	    arguments.add("");
+	if (post.richRdf())
+	    if (post.isPublic() != null)
+		arguments.add(post.isPublic().toString());
+	    else
+		arguments.add("");
+	if (post.richRdf())
+	    if (post.link() != null)
+		arguments.add(post.link());
+	    else
+		arguments.add("");
         writers[FileNames.POST.ordinal()].writeEntry(arguments);
         arguments.clear();
 
@@ -172,6 +202,14 @@ public class CSVMergeForeignPersonActivitySerializer extends PersonActivitySeria
             writers[FileNames.POST_HASTAG_TAG.ordinal()].writeEntry(arguments);
             arguments.clear();
         }
+
+	if (post.richRdf())
+	    for( Long t : post.mentioned() ) {
+		arguments.add(Long.toString(post.messageId()));
+		arguments.add(Long.toString(t));
+		writers[FileNames.POST_HASMENTIONED_PERSON.ordinal()].writeEntry(arguments);
+		arguments.clear();
+	    }
     }
 
     protected void serialize( final Comment comment ) {
@@ -196,6 +234,16 @@ public class CSVMergeForeignPersonActivitySerializer extends PersonActivitySeria
             arguments.add(empty);
             arguments.add(Long.toString(comment.replyOf()));
         }
+	if (comment.richRdf())
+	    if (comment.isPublic() != null)
+		arguments.add(comment.isPublic().toString());
+	    else
+		arguments.add("");
+	if (comment.richRdf())
+	    if (comment.link() != null)
+		arguments.add(comment.link());
+	    else
+		arguments.add("");
         writers[FileNames.COMMENT.ordinal()].writeEntry(arguments);
         arguments.clear();
 
@@ -205,6 +253,14 @@ public class CSVMergeForeignPersonActivitySerializer extends PersonActivitySeria
             writers[FileNames.COMMENT_HASTAG_TAG.ordinal()].writeEntry(arguments);
             arguments.clear();
         }
+
+	if (comment.richRdf())
+	    for( Long t : comment.mentioned() ) {
+		arguments.add(Long.toString(comment.messageId()));
+		arguments.add(Long.toString(t));
+		writers[FileNames.COMMENT_HASMENTIONED_PERSON.ordinal()].writeEntry(arguments);
+		arguments.clear();
+	    }
     }
 
     protected void serialize(final  Photo photo ) {
@@ -223,6 +279,11 @@ public class CSVMergeForeignPersonActivitySerializer extends PersonActivitySeria
 	    arguments.add(Integer.toString(photo.countryId()));
 	else
 	    arguments.add("");
+	if (photo.richRdf())
+	    if (photo.isPublic() != null)
+		arguments.add(photo.isPublic().toString());
+	    else
+		arguments.add("");
         writers[FileNames.POST.ordinal()].writeEntry(arguments);
         arguments.clear();
 
@@ -232,6 +293,14 @@ public class CSVMergeForeignPersonActivitySerializer extends PersonActivitySeria
             writers[FileNames.POST_HASTAG_TAG.ordinal()].writeEntry(arguments);
             arguments.clear();
         }
+
+	if (photo.richRdf())
+	    for( Long t : photo.mentioned() ) {
+		arguments.add(Long.toString(photo.messageId()));
+		arguments.add(Long.toString(t));
+		writers[FileNames.POST_HASMENTIONED_PERSON.ordinal()].writeEntry(arguments);
+		arguments.clear();
+	    }
     }
 
     protected void serialize(final  ForumMembership membership ) {
