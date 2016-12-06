@@ -282,13 +282,33 @@ public class UpdateEventSerializer {
 		data_.add(Long.toString(post.content().length()));
 		data_.add(Long.toString(post.author().accountId()));
 		data_.add(Long.toString(post.forumId()));
-		data_.add(Long.toString(Dictionaries.ips.getLocation(post.ipAddress())));
+		if (!post.richRdf() || post.countryKnown())
+		    data_.add(Long.toString(Dictionaries.ips.getLocation(post.ipAddress())));
+		else
+		    data_.add(empty);
 		
 		beginList();
 		for( int tag : post.tags()) {
 			list_.add(Integer.toString(tag));
 		}
 		endList();
+
+		if (post.richRdf()) {
+		    beginList();
+		    if (post.mentioned() != null)
+			for( Long x : post.mentioned())
+			    list_.add(Long.toString(x));
+		    endList();			    
+		    if (post.isPublic() != null)
+			data_.add(post.isPublic().toString());
+		    else
+			data_.add(empty);
+		    if (post.link() != null)
+			data_.add(post.link());
+		    else
+			data_.add(empty);
+		}
+		
 		endEvent();
 	}
 	
@@ -320,13 +340,32 @@ public class UpdateEventSerializer {
 		data_.add("0");
 		data_.add(Long.toString(photo.author().accountId()));
 		data_.add(Long.toString(photo.forumId()));
-		data_.add(Long.toString(Dictionaries.ips.getLocation(photo.ipAddress())));
+		if (!photo.richRdf() || photo.countryKnown())
+		    data_.add(Long.toString(Dictionaries.ips.getLocation(photo.ipAddress())));
+		else
+		    data_.add(empty);
 		
 		beginList();
 		for( int tag : photo.tags()) {
 			list_.add(Integer.toString(tag));
 		}
 		endList();
+
+		if (photo.richRdf()) {
+		    beginList();
+		    if (photo.mentioned() != null)
+			for( Long x : photo.mentioned())
+			    list_.add(Long.toString(x));
+		    endList();			    
+		    if (photo.isPublic() != null)
+			data_.add(photo.isPublic().toString());
+		    else
+			data_.add(empty);
+		    if (photo.link() != null)
+			data_.add(photo.link());
+		    else
+			data_.add(empty);
+		}
 		endEvent();
 	}
 	
@@ -341,7 +380,10 @@ public class UpdateEventSerializer {
 		data_.add(comment.content());
 		data_.add(Integer.toString(comment.content().length()));
 		data_.add(Long.toString(comment.author().accountId()));
-		data_.add(Long.toString(Dictionaries.ips.getLocation(comment.ipAddress())));
+		if (!comment.richRdf() || comment.countryKnown())
+		    data_.add(Long.toString(Dictionaries.ips.getLocation(comment.ipAddress())));
+		else
+		    data_.add("");
 		if (comment.replyOf() == comment.postId()) {
 			data_.add(Long.toString(comment.postId()));
 			data_.add("-1");
@@ -354,6 +396,23 @@ public class UpdateEventSerializer {
 			list_.add(Integer.toString(tag));
 		}
 		endList();
+
+		if (comment.richRdf()) {
+		    data_.add(comment.gif());
+		    beginList();
+		    if (comment.mentioned() != null)
+			for( Long x : comment.mentioned())
+			    list_.add(Long.toString(x));
+		    endList();			    
+		    if (comment.isPublic() != null)
+			data_.add(comment.isPublic().toString());
+		    else
+			data_.add("");
+		    if (comment.link() != null)
+			data_.add(comment.link());
+		    else
+			data_.add("");
+		}
 		endEvent();
 	}
 	
