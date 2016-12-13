@@ -398,7 +398,6 @@ public class UpdateEventSerializer {
 		endList();
 
 		if (comment.richRdf()) {
-		    data_.add(comment.gif());
 		    beginList();
 		    if (comment.mentioned() != null)
 			for( Long x : comment.mentioned())
@@ -410,6 +409,10 @@ public class UpdateEventSerializer {
 			data_.add("");
 		    if (comment.link() != null)
 			data_.add(comment.link());
+		    else
+			data_.add("");
+		    if (comment.gif() != null)
+			data_.add(comment.gif());
 		    else
 			data_.add("");
 		}
