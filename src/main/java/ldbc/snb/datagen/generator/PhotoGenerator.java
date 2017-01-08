@@ -87,14 +87,22 @@ public class PhotoGenerator {
 				if (richRdf) {
 				    photo_.richRdf(true);
 				    if (randomFarm.get(RandomGeneratorFarm.Aspect.PHOTO_MENTIONED).nextDouble() > 0.6) {
-					//TODO: Add mentioned persons with some logic
 					TreeSet<Long> t = new TreeSet<Long>();
-					t.add(new Long(23));
-					photo_.mentioned(t);
+                                        // The user mentions one or more (up to 4) members of the forum                                                                                                
+                                        t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(memberships.size())).person().accountId());                                                
+                                        double probabilityForNumberOfMentions = randomFarm.get(RandomGeneratorFarm.Aspect.POST_MENTIONED).nextDouble();
+                                        if (probabilityForNumberOfMentions > 0.5)
+                                            t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(memberships.size())).person().accountId());
+                                        if (probabilityForNumberOfMentions > 0.75)
+                                            t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(memberships.size())).person().accountId());
+                                        if (probabilityForNumberOfMentions > 0.95)
+                                            t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(memberships.size())).person().accountId());                                  
+                                        photo_.mentioned(t);
 				    }
 				    if (randomFarm.get(RandomGeneratorFarm.Aspect.PHOTO_VISIBILITY).nextDouble() > 0.95) {
-					//TODO: Sometimes it should be true, sometimes (when somebody was mentioned) it should be false
-					photo_.setPublic(true);
+                                        if (photo_.mentioned() == null)
+                                            photo_.setPublic(true);
+                                        else photo_.setPublic(false);
 				    }
 				}
 				if (richRdf && randomFarm.get(RandomGeneratorFarm.Aspect.PHOTO_COUNTRY).nextDouble() > 0.06)
