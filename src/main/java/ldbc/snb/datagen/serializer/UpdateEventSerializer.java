@@ -202,15 +202,24 @@ public class UpdateEventSerializer {
 		currentDependantDate_ = 0;
 		beginEvent(person.creationDate(), UpdateEvent.UpdateEventType.ADD_PERSON);
 		data_.add(Long.toString(person.accountId()));
-		data_.add(person.firstName());
-		data_.add(person.lastName());
+		if (!person.richRdf() || person.firstNameKnown())
+		    data_.add(person.firstName());
+		else
+		    data_.add("");
+		if (!person.richRdf() || person.lastNameKnown())
+		    data_.add(person.lastName());
+		else
+		    data_.add("");
 		
 		if(person.gender() == 1) {
 			data_.add("male");
 		} else {
 			data_.add("female");
 		}
-		data_.add(Long.toString(person.birthDay()));
+		if (!person.richRdf() || person.birthDayKnown())
+		    data_.add(Long.toString(person.birthDay()));
+		else
+		    data_.add("");
 		data_.add(Long.toString(person.creationDate()));
 		data_.add(person.ipAddress().toString());
 		data_.add(Dictionaries.browsers.getName(person.browserId()));

@@ -89,18 +89,18 @@ public class PhotoGenerator {
 				    if (randomFarm.get(RandomGeneratorFarm.Aspect.PHOTO_MENTIONED).nextDouble() > 0.6) {
 					TreeSet<Long> t = new TreeSet<Long>();
                                         // The user mentions one or more (up to 4) members of the forum                                                                                                
-                                        t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(memberships.size())).person().accountId());                                                
-                                        double probabilityForNumberOfMentions = randomFarm.get(RandomGeneratorFarm.Aspect.POST_MENTIONED).nextDouble();
+                                        t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX_PHOTO_MENTIONED).nextInt(memberships.size())).person().accountId());                                                
+                                        double probabilityForNumberOfMentions = randomFarm.get(RandomGeneratorFarm.Aspect.PHOTO_MENTIONED_NUM).nextDouble();
                                         if (probabilityForNumberOfMentions > 0.5)
-                                            t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(memberships.size())).person().accountId());
+                                            t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX_PHOTO_MENTIONED).nextInt(memberships.size())).person().accountId());
                                         if (probabilityForNumberOfMentions > 0.75)
-                                            t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(memberships.size())).person().accountId());
+                                            t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX_PHOTO_MENTIONED).nextInt(memberships.size())).person().accountId());
                                         if (probabilityForNumberOfMentions > 0.95)
-                                            t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(memberships.size())).person().accountId());                                  
+                                            t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX_PHOTO_MENTIONED).nextInt(memberships.size())).person().accountId());                                  
                                         photo_.mentioned(t);
 				    }
 				    if (randomFarm.get(RandomGeneratorFarm.Aspect.PHOTO_VISIBILITY).nextDouble() > 0.95) {
-                                        if (photo_.mentioned() == null)
+                                        if (photo_.mentioned() == null || randomFarm.get(RandomGeneratorFarm.Aspect.PHOTO_VISIBILITY_TF).nextDouble() > 0.5)
                                             photo_.setPublic(true);
                                         else photo_.setPublic(false);
 				    }
