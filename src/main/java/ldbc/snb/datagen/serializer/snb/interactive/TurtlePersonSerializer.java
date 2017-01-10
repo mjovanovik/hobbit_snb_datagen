@@ -178,12 +178,23 @@ public class TurtlePersonSerializer extends PersonSerializer {
         String prefix = SN.getPersonURI(p.accountId());
         StringBuffer result = new StringBuffer(19000);
         long id = SN.formId(knowsId);
+
         Turtle.createTripleSPO(result, prefix, SNVOC.knows, SN.getKnowsURI(id));
         Turtle.createTripleSPO(result, SN.getKnowsURI(id), SNVOC.hasPerson,
                 SN.getPersonURI(knows.to().accountId()));
-
         Turtle.createTripleSPO(result, SN.getKnowsURI(id), SNVOC.creationDate,
                 Turtle.createDataTypeLiteral(dateTimeFormat.format(knows.creationDate()), XSD.DateTime));
+	Turtle.createTripleSPO(result, prefix, SNVOC.knows, SN.getPersonURI(knows.to().accountId()));
+
+	knowsId++;
+	id = SN.formId(knowsId);
+	Turtle.createTripleSPO(result, SN.getPersonURI(knows.to().accountId()), SNVOC.knows, SN.getKnowsURI(id));
+        Turtle.createTripleSPO(result, SN.getKnowsURI(id), SNVOC.hasPerson,
+                prefix);
+        Turtle.createTripleSPO(result, SN.getKnowsURI(id), SNVOC.creationDate,
+                Turtle.createDataTypeLiteral(dateTimeFormat.format(knows.creationDate()), XSD.DateTime));
+	Turtle.createTripleSPO(result, SN.getPersonURI(knows.to().accountId()), SNVOC.knows, prefix);
+
         writers[FileNames.SOCIAL_NETWORK.ordinal()].write(result.toString());
         knowsId++;
     }
