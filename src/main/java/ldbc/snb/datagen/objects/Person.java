@@ -107,6 +107,7 @@ public class Person implements Writable {
 		}
 	}
 
+	private boolean richRdf_;
 	private long accountId_;
 	private long creationDate_;
 	private long maxNumKnows_;
@@ -121,13 +122,16 @@ public class Person implements Writable {
 	private int universityLocationId_;
 	private byte gender_;
 	private long birthDay_;
+	private boolean birthDayKnown_;
 	private boolean isLargePoster_;
 	private long randomId_;
 
 	private TreeSet<String> emails_;
 	private ArrayList<Integer> languages_;
 	private String firstName_;
+    	private boolean firstNameKnown_;
 	private String lastName_;
+    	private boolean lastNameKnown_;
 	private HashMap<Long, Long> companies_;
 	private long classYear_;
 
@@ -147,6 +151,7 @@ public class Person implements Writable {
 		languages_ = new ArrayList<Integer>();
 		companies_ = new HashMap<Long, Long>();
 
+		richRdf_ = p.richRdf();
 		accountId_ = p.accountId();
 		creationDate_ = p.creationDate();
 		maxNumKnows_ = p.maxNumKnows();
@@ -168,6 +173,7 @@ public class Person implements Writable {
 		universityLocationId_ = p.universityLocationId();
 		gender_ = p.gender();
 		birthDay_ = p.birthDay();
+		birthDayKnown_ = p.birthDayKnown();
 		isLargePoster_ = p.isLargePoster();
 		randomId_ = p.randomId();
 
@@ -180,12 +186,22 @@ public class Person implements Writable {
 		}
 
 		firstName_ = new String(p.firstName());
+		firstNameKnown_ = p.firstNameKnown();
 		lastName_ = new String(p.lastName());
+		lastNameKnown_ = p.lastNameKnown();
 		for( Map.Entry<Long,Long> c : p.companies().entrySet()) {
 			companies_.put(c.getKey(),c.getValue());
 		}
 		classYear_ = p.classYear();
 
+	}
+
+	public  boolean richRdf () {
+		return richRdf_;
+	}
+
+	public  void richRdf( boolean richRdf ) {
+		richRdf_ = richRdf;
 	}
 
 	public long accountId() {
@@ -303,6 +319,14 @@ public class Person implements Writable {
 		birthDay_ = birthDay;
 	}
 
+    	public  boolean birthDayKnown () {
+		return birthDayKnown_;
+	}
+
+	public  void birthDayKnown( boolean birthDayKnown ) {
+		birthDayKnown_ = birthDayKnown;
+	}
+
 	public  boolean isLargePoster() {
 		return isLargePoster_;
 	}
@@ -343,11 +367,27 @@ public class Person implements Writable {
 		firstName_ = firstName;
 	}
 
+        public  boolean firstNameKnown () {
+		return firstNameKnown_;
+	}
+
+	public  void firstNameKnown( boolean firstNameKnown ) {
+		firstNameKnown_ = firstNameKnown;
+	}
+
 	public  String lastName() {
 		return lastName_;
 	}
 	public  void lastName ( String lastName ) {
 		lastName_ = new String(lastName);
+	}
+
+        public  boolean lastNameKnown () {
+		return lastNameKnown_;
+	}
+
+	public  void lastNameKnown( boolean lastNameKnown ) {
+		lastNameKnown_ = lastNameKnown;
 	}
 
 	public  HashMap<Long, Long> companies () {
@@ -396,6 +436,8 @@ public class Person implements Writable {
 		universityLocationId_ = arg0.readInt();
 		gender_ = arg0.readByte();
 		birthDay_ = arg0.readLong();
+		birthDayKnown_ = arg0.readBoolean();
+		richRdf_ = arg0.readBoolean();
 		isLargePoster_ = arg0.readBoolean();
 		randomId_ = arg0.readLong();
 
@@ -410,7 +452,9 @@ public class Person implements Writable {
 			languages_.add(arg0.readInt());
 		}
 		firstName_ = arg0.readUTF();
+		firstNameKnown_ = arg0.readBoolean();
 		lastName_ = arg0.readUTF();
+		lastNameKnown_ = arg0.readBoolean();
 		int numCompanies = arg0.readInt();
 		companies_ = new HashMap<Long,Long>();
 		for( int i = 0; i < numCompanies; ++i) {
@@ -445,6 +489,8 @@ public class Person implements Writable {
 		arg0.writeInt(universityLocationId_);
 		arg0.writeByte(gender_);
 		arg0.writeLong(birthDay_);
+		arg0.writeBoolean(birthDayKnown_);
+		arg0.writeBoolean(richRdf_);
 		arg0.writeBoolean(isLargePoster_);
 		arg0.writeLong(randomId_);
 
@@ -457,7 +503,9 @@ public class Person implements Writable {
 			arg0.writeInt(l);
 		}
 		arg0.writeUTF(firstName_);
+		arg0.writeBoolean(firstNameKnown_);
 		arg0.writeUTF(lastName_);
+		arg0.writeBoolean(lastNameKnown_);
 		arg0.writeInt(companies_.size());
 		for( Map.Entry<Long,Long> e : companies_.entrySet()) {
 			arg0.writeLong(e.getKey());

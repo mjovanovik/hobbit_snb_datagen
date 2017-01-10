@@ -47,6 +47,7 @@ public class RandomGeneratorFarm {
     public enum Aspect {
         DATE,
         BIRTH_DAY,
+	BIRTH_DAY_KNOWN,
         KNOWS_REQUEST,
         INITIATOR,
         UNIFORM,
@@ -100,7 +101,9 @@ public class RandomGeneratorFarm {
         ALBUM,
         ALBUM_MEMBERSHIP,
         NAME,
+	NAME_KNOWN,
         SURNAME,
+	SURNAME_KNOWN,
         TAG_OTHER_COUNTRY,
         SET_OF_TAG,
         TEXT_SIZE,

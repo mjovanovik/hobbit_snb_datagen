@@ -104,10 +104,12 @@ public class TurtlePersonSerializer extends PersonSerializer {
         Turtle.AddTriple(result, true, false, prefix, RDF.type, SNVOC.Person);
         Turtle.AddTriple(result, false, false, prefix, SNVOC.id,
                 Turtle.createDataTypeLiteral(Long.toString(p.accountId()), XSD.Long));
-        Turtle.AddTriple(result, false, false, prefix, SNVOC.firstName,
-                Turtle.createLiteral(p.firstName()));
-        Turtle.AddTriple(result, false, false, prefix, SNVOC.lastName,
-                Turtle.createLiteral(p.lastName()));
+	if (!p.richRdf() || p.firstNameKnown())
+	    Turtle.AddTriple(result, false, false, prefix, SNVOC.firstName,
+			     Turtle.createLiteral(p.firstName()));
+	if (!p.richRdf() || p.lastNameKnown())
+	    Turtle.AddTriple(result, false, false, prefix, SNVOC.lastName,
+			     Turtle.createLiteral(p.lastName()));
 
         if(p.gender() == 1) {
             Turtle.AddTriple(result, false, false, prefix, SNVOC.gender,
@@ -116,8 +118,9 @@ public class TurtlePersonSerializer extends PersonSerializer {
             Turtle.AddTriple(result, false, false, prefix, SNVOC.gender,
                     Turtle.createLiteral("female"));
         }
-        Turtle.AddTriple(result, false, false, prefix, SNVOC.birthday,
-                Turtle.createDataTypeLiteral(Dictionaries.dates.formatDate(p.birthDay()), XSD.Date));
+	if (!p.richRdf() || p.birthDayKnown())
+	    Turtle.AddTriple(result, false, false, prefix, SNVOC.birthday,
+			     Turtle.createDataTypeLiteral(Dictionaries.dates.formatDate(p.birthDay()), XSD.Date));
         Turtle.AddTriple(result, false, false, prefix, SNVOC.ipaddress,
                     Turtle.createLiteral(p.ipAddress().toString()));
         Turtle.AddTriple(result, false, false, prefix, SNVOC.browser,

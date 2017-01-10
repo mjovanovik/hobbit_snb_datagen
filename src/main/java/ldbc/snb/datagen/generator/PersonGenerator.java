@@ -21,6 +21,7 @@ public class PersonGenerator {
     private PowerDistGenerator randomTagPowerLaw        = null;
     private RandomGeneratorFarm randomFarm              = null;
     private int nextId                                  = 0;
+    private boolean richRdf = false;
 
     public PersonGenerator( Configuration conf, String degreeDistribution ) {
 	    try{
@@ -38,6 +39,7 @@ public class PersonGenerator {
 		    DatagenParams.maxNumTagsPerUser + 1,
 		    DatagenParams.alpha);
 	    randomFarm = new RandomGeneratorFarm();
+	    this.richRdf = conf.getBoolean("ldbc.snb.datagen.generator.richRdf",false);
     }
     
     private long composeUserId(long id, long date) {
@@ -63,9 +65,13 @@ public class PersonGenerator {
         long creationDate = Dictionaries.dates.randomPersonCreationDate(randomFarm.get(RandomGeneratorFarm.Aspect.DATE));
         int countryId = Dictionaries.places.getCountryForUser(randomFarm.get(RandomGeneratorFarm.Aspect.COUNTRY));
         Person person = new Person();
+	person.richRdf(richRdf);
         person.creationDate(creationDate);
         person.gender((randomFarm.get(RandomGeneratorFarm.Aspect.GENDER).nextDouble() > 0.5) ? (byte) 1 : (byte) 0);
-        person.birthDay(Dictionaries.dates.getBirthDay(randomFarm.get(RandomGeneratorFarm.Aspect.BIRTH_DAY), creationDate));
+	person.birthDay(Dictionaries.dates.getBirthDay(randomFarm.get(RandomGeneratorFarm.Aspect.BIRTH_DAY), creationDate));
+	if (richRdf) {
+	    person.birthDayKnown(randomFarm.get(RandomGeneratorFarm.Aspect.BIRTH_DAY_KNOWN).nextDouble() > 0.3);
+	}
         person.browserId(Dictionaries.browsers.getRandomBrowserId(randomFarm.get(RandomGeneratorFarm.Aspect.BROWSER)));
         person.countryId(countryId);
         person.cityId(Dictionaries.places.getRandomCity(randomFarm.get(RandomGeneratorFarm.Aspect.CITY), countryId));
@@ -82,8 +88,13 @@ public class PersonGenerator {
                 person.countryId(),
                 person.gender() == 1,
                 Dictionaries.dates.getBirthYear(person.birthDay())));
-
+	if (richRdf) {
+	    person.firstNameKnown(randomFarm.get(RandomGeneratorFarm.Aspect.NAME_KNOWN).nextDouble() > 0.95);
+	}
         person.lastName(Dictionaries.names.getRandomSurname(randomFarm.get(RandomGeneratorFarm.Aspect.SURNAME), person.countryId()));
+	if (richRdf) {
+	    person.lastNameKnown(randomFarm.get(RandomGeneratorFarm.Aspect.SURNAME_KNOWN).nextDouble() > 0.95);
+	}
 
         int numEmails = randomFarm.get(RandomGeneratorFarm.Aspect.EXTRA_INFO).nextInt(DatagenParams.maxEmails) + 1;
         double prob = randomFarm.get(RandomGeneratorFarm.Aspect.EXTRA_INFO).nextDouble();
