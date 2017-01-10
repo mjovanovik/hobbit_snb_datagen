@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
 import java.util.TreeSet;
+import org.apache.commons.lang.RandomStringUtils;
 
 
 abstract public class PostGenerator {
@@ -116,19 +117,26 @@ abstract public class PostGenerator {
 						forum.language());
 					if (richRdf) {
 					    post_.richRdf(true);
-					    if (randomFarm.get(RandomGeneratorFarm.Aspect.POST_MENTIONED).nextDouble() > 0.6) {
-						//TODO: Add mentioned persons with some logic
+					    if (randomFarm.get(RandomGeneratorFarm.Aspect.POST_MENTIONED).nextDouble() > 0.6) {						
 						TreeSet<Long> t = new TreeSet<Long>();
-						t.add(new Long(23));
-						post_.mentioned(t);
+                                                // The user mentions one or more (up to 4) members of the forum                                                                                                
+                                                t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(memberships.size())).person().accountId());                                                
+                                                double probabilityForNumberOfMentions = randomFarm.get(RandomGeneratorFarm.Aspect.POST_MENTIONED).nextDouble();
+                                                if (probabilityForNumberOfMentions > 0.5)
+                                                    t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(memberships.size())).person().accountId());
+                                                if (probabilityForNumberOfMentions > 0.75)
+                                                    t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(memberships.size())).person().accountId());
+                                                if (probabilityForNumberOfMentions > 0.95)
+                                                    t.add(memberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(memberships.size())).person().accountId());                                                       
+                                                post_.mentioned(t);
 					    }
-					    if (randomFarm.get(RandomGeneratorFarm.Aspect.POST_VISIBILITY).nextDouble() > 0.95) {
-						//TODO: Sometimes it should be true, sometimes (when somebody was mentioned) it should be false
-						post_.setPublic(true);
+					    if (randomFarm.get(RandomGeneratorFarm.Aspect.POST_VISIBILITY).nextDouble() > 0.95) {                                                
+                                                if (post_.mentioned() == null)
+                                                    post_.setPublic(true);
+                                                else post_.setPublic(false);
 					    }
-					    if (randomFarm.get(RandomGeneratorFarm.Aspect.POST_LINK).nextDouble() > 0.57) {
-						//TODO: Proper link should be added
-						post_.link("link1");
+					    if (randomFarm.get(RandomGeneratorFarm.Aspect.POST_LINK).nextDouble() > 0.57) {						
+						post_.link("http://ld.bc/" + RandomStringUtils.random(6, true, false));
 					    }
 					}
 					if (richRdf && randomFarm.get(RandomGeneratorFarm.Aspect.POST_COUNTRY).nextDouble() > 0.02)

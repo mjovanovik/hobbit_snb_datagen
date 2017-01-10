@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.TreeSet;
+import org.apache.commons.lang.RandomStringUtils;
 
 /**
  *
@@ -108,18 +109,25 @@ public class CommentGenerator {
 				if (richRdf) {
 				    comment.richRdf(true);
 				    if (randomFarm.get(RandomGeneratorFarm.Aspect.COMMENT_MENTIONED).nextDouble() > 0.6) {
-					//TODO: Add mentioned persons with some logic
 					TreeSet<Long> t = new TreeSet<Long>();
-					t.add(new Long(23));
+                                        // The user mentions one or more (up to 4) members of the forum                                        
+                                        t.add(validMemberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(validMemberships.size())).person().accountId());
+                                        double probabilityForNumberOfMentions = randomFarm.get(RandomGeneratorFarm.Aspect.POST_MENTIONED).nextDouble();
+                                        if (probabilityForNumberOfMentions > 0.5)
+                                            t.add(validMemberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(validMemberships.size())).person().accountId());
+                                        if (probabilityForNumberOfMentions > 0.75)
+                                            t.add(validMemberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(validMemberships.size())).person().accountId());
+                                        if (probabilityForNumberOfMentions > 0.95)
+                                            t.add(validMemberships.get(randomFarm.get(RandomGeneratorFarm.Aspect.MEMBERSHIP_INDEX).nextInt(validMemberships.size())).person().accountId());       					
 					comment.mentioned(t);
 				    }
 				    if (randomFarm.get(RandomGeneratorFarm.Aspect.COMMENT_VISIBILITY).nextDouble() > 0.95) {
-					//TODO: Sometimes it should be true, sometimes (when somebody was mentioned) it should be false
-					comment.setPublic(true);
+                                        if (comment.mentioned() == null)
+                                            comment.setPublic(true);
+                                        else comment.setPublic(false);
 				    }
 				    if (randomFarm.get(RandomGeneratorFarm.Aspect.COMMENT_LINK).nextDouble() > 0.57) {
-					//TODO: Proper link should be added
-					comment.link("link1");
+					comment.link("http://ld.bc/" + RandomStringUtils.random(6, true, false));
 				    }
 				}
 				if (richRdf && randomFarm.get(RandomGeneratorFarm.Aspect.COMMENT_COUNTRY).nextDouble() > 0.02)
